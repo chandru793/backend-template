@@ -42,6 +42,7 @@ export async function createUserHandler(
 
 /**
  * Get user by ID
+ * Uses cache-aside pattern with 60-second TTL
  */
 export async function getUserHandler(
   this: FastifyRequest['server'],
@@ -50,9 +51,18 @@ export async function getUserHandler(
 ) {
   const { id } = request.params;
 
-  const user = await this.prisma.user.findUnique({
-    where: { id },
-  });
+  // Cache-aside pattern: try cache first, fetch from DB on miss
+  const user = await this.cache.getOrSet(
+    `user:${id}`,
+    async () => {
+      const dbUser = await this.prisma.user.findUnique({
+        where: { id },
+      });
+      if (!dbUser) return null;
+      return dbUser;
+    },
+    60, // Cache for 60 seconds
+  );
 
   if (!user) {
     throw new NotFoundError(`User with ID ${id}`);
@@ -105,6 +115,7 @@ export async function listUsersHandler(
 
 /**
  * Update user by ID
+ * Invalidates cache after update
  */
 export async function updateUserHandler(
   this: FastifyRequest['server'],
@@ -131,6 +142,9 @@ export async function updateUserHandler(
     },
   });
 
+  // Invalidate cache after update
+  await this.cache.del(`user:${id}`);
+
   const response = {
     ...user,
     createdAt: user.createdAt.getTime(),
@@ -142,6 +156,7 @@ export async function updateUserHandler(
 
 /**
  * Delete user by ID
+ * Invalidates cache after deletion
  */
 export async function deleteUserHandler(
   this: FastifyRequest['server'],
@@ -162,6 +177,9 @@ export async function deleteUserHandler(
   await this.prisma.user.delete({
     where: { id },
   });
+
+  // Invalidate cache after deletion
+  await this.cache.del(`user:${id}`);
 
   return reply.code(204).send();
 }

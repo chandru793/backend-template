@@ -1,6 +1,7 @@
 import type { PrismaClient } from '@prisma/client';
 import type { Redis } from 'ioredis';
 import type { JWT } from '@fastify/jwt';
+import type { CacheService } from '../services/cache.service.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -31,6 +32,8 @@ declare module 'fastify' {
     redisRateLimit: Redis;
     // JWT instance (handles both access and refresh tokens)
     jwt: JWT;
+    // Cache service (Redis-backed)
+    cache: CacheService;
     // Added by @fastify/swagger-ui when registered (optional until Phase 10)
     swaggerCSP?: {
       script: string[];

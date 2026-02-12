@@ -1,7 +1,13 @@
 import type { PrismaClient } from '@prisma/client';
 import type { Redis } from 'ioredis';
 import type { JWT } from '@fastify/jwt';
+import type { Queue } from 'bullmq';
 import type { CacheService } from '../services/cache.service.js';
+import type {
+  EmailJobData,
+  WelcomeEmailJobData,
+  DataProcessingJobData,
+} from '../queues/jobs/types.js';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -34,6 +40,13 @@ declare module 'fastify' {
     jwt: JWT;
     // Cache service (Redis-backed)
     cache: CacheService;
+    // BullMQ queues for background job processing
+    queues: {
+      email: Queue<EmailJobData>;
+      welcomeEmail: Queue<WelcomeEmailJobData>;
+      dataProcessing: Queue<DataProcessingJobData>;
+      deadLetter: Queue;
+    };
     // Added by @fastify/swagger-ui when registered (optional until Phase 10)
     swaggerCSP?: {
       script: string[];

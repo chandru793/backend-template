@@ -186,7 +186,7 @@ export async function meHandler(
     email: user.email,
     name: user.name,
     role: user.role,
-    createdAt: user.createdAt.getTime(),
-    updatedAt: user.updatedAt.getTime(),
+    createdAt: new Date(user.createdAt).getTime(),
+    updatedAt: new Date(user.updatedAt).getTime(),
   });
 }

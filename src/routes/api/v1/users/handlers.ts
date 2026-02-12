@@ -33,8 +33,8 @@ export async function createUserHandler(
   // Convert Date to Unix timestamp (milliseconds)
   const response = {
     ...user,
-    createdAt: user.createdAt.getTime(),
-    updatedAt: user.updatedAt.getTime(),
+    createdAt: new Date(user.createdAt).getTime(),
+    updatedAt: new Date(user.updatedAt).getTime(),
   };
 
   return reply.code(201).send(response);
@@ -70,8 +70,8 @@ export async function getUserHandler(
 
   const response = {
     ...user,
-    createdAt: user.createdAt.getTime(),
-    updatedAt: user.updatedAt.getTime(),
+    createdAt: new Date(user.createdAt).getTime(),
+    updatedAt: new Date(user.updatedAt).getTime(),
   };
 
   return reply.send(response);
@@ -147,8 +147,8 @@ export async function updateUserHandler(
 
   const response = {
     ...user,
-    createdAt: user.createdAt.getTime(),
-    updatedAt: user.updatedAt.getTime(),
+    createdAt: new Date(user.createdAt).getTime(),
+    updatedAt: new Date(user.updatedAt).getTime(),
   };
 
   return reply.send(response);

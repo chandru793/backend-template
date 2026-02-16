@@ -120,11 +120,7 @@ describe('User Routes', () => {
 
   describe('GET /api/v1/users', () => {
     it('returns paginated list of users', async () => {
-      await Promise.all([
-        createUser(prisma),
-        createUser(prisma),
-        createUser(prisma),
-      ]);
+      await Promise.all([createUser(prisma), createUser(prisma), createUser(prisma)]);
 
       const response = await app.inject({
         method: 'GET',

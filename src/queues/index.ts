@@ -1,10 +1,6 @@
 import { Queue } from 'bullmq';
 import { createQueueConnection } from './connections.js';
-import type {
-  EmailJobData,
-  WelcomeEmailJobData,
-  DataProcessingJobData,
-} from './jobs/types.js';
+import type { EmailJobData, WelcomeEmailJobData, DataProcessingJobData } from './jobs/types.js';
 
 /**
  * Email Queue

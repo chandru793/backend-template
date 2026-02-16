@@ -66,7 +66,11 @@ export async function generateTokenPair(
 /**
  * Revoke a refresh token
  */
-export async function revokeRefreshToken(fastify: FastifyInstance, userId: string, token: string): Promise<void> {
+export async function revokeRefreshToken(
+  fastify: FastifyInstance,
+  userId: string,
+  token: string,
+): Promise<void> {
   // Find and delete matching refresh tokens for this user
   // Since tokens are hashed, we need to verify each one
   const userTokens = await fastify.prisma.refreshToken.findMany({

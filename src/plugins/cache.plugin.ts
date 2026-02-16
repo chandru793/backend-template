@@ -45,9 +45,7 @@ const cachePlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // Decorate Fastify instance
   fastify.decorate('cache', cacheService);
 
-  fastify.log.info(
-    `Cache service enabled (default TTL: ${fastify.config.CACHE_TTL}s)`,
-  );
+  fastify.log.info(`Cache service enabled (default TTL: ${fastify.config.CACHE_TTL}s)`);
 };
 
 export default fp(cachePlugin, {

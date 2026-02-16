@@ -21,7 +21,10 @@ export async function authenticate(request: FastifyRequest, _reply: FastifyReply
  * Optional authentication middleware
  * Verifies token if present, but doesn't require it
  */
-export async function optionalAuthenticate(request: FastifyRequest, _reply: FastifyReply): Promise<void> {
+export async function optionalAuthenticate(
+  request: FastifyRequest,
+  _reply: FastifyReply,
+): Promise<void> {
   try {
     await request.jwtVerify();
   } catch {

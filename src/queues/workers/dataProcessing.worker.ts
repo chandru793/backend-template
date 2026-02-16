@@ -88,29 +88,26 @@ dataProcessingWorker.on('completed', (job: Job<DataProcessingJobData, DataProces
 /**
  * Handle failure - send to DLQ
  */
-dataProcessingWorker.on(
-  'failed',
-  (job: Job<DataProcessingJobData> | undefined, err: Error) => {
-    if (!job) return;
+dataProcessingWorker.on('failed', (job: Job<DataProcessingJobData> | undefined, err: Error) => {
+  if (!job) return;
 
-    console.error(`Data processing job ${job.id} failed:`, err.message);
+  console.error(`Data processing job ${job.id} failed:`, err.message);
 
-    if (job.attemptsMade >= (job.opts.attempts ?? 2)) {
-      deadLetterQueue
-        .add('failed-data-processing', {
-          originalQueue: 'data-processing',
-          originalJobId: job.id,
-          data: job.data,
-          failedReason: err.message,
-          attempts: job.attemptsMade,
-        })
-        .catch((dlqErr: unknown) => {
-          console.error('Failed to add to DLQ:', dlqErr);
-        });
-      console.error(`Data processing job ${job.id} moved to dead letter queue`);
-    }
-  },
-);
+  if (job.attemptsMade >= (job.opts.attempts ?? 2)) {
+    deadLetterQueue
+      .add('failed-data-processing', {
+        originalQueue: 'data-processing',
+        originalJobId: job.id,
+        data: job.data,
+        failedReason: err.message,
+        attempts: job.attemptsMade,
+      })
+      .catch((dlqErr: unknown) => {
+        console.error('Failed to add to DLQ:', dlqErr);
+      });
+    console.error(`Data processing job ${job.id} moved to dead letter queue`);
+  }
+});
 
 /**
  * Handle errors

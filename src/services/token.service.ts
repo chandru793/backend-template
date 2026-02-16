@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { hashPassword } from './password.service.js';
 
@@ -33,10 +34,12 @@ export async function generateTokenPair(
   });
 
   // Generate refresh token (7 days - override default expiry)
+  // jti (JWT ID) ensures uniqueness even when issued within the same second
   const refreshToken = fastify.jwt.sign(
     {
       userId,
       type: 'refresh', // Mark as refresh token
+      jti: randomUUID(),
     },
     {
       expiresIn: '7d',

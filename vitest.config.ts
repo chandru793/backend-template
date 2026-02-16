@@ -6,6 +6,7 @@ export default defineConfig({
     environment: 'node',
     include: ['src/**/*.test.ts', 'tests/**/*.test.ts'],
     exclude: ['node_modules', 'dist'],
+    globalSetup: ['./tests/global-setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
@@ -15,6 +16,8 @@ export default defineConfig({
         '**/*.test.ts',
         '**/*.d.ts',
         'tests/helpers/**',
+        'tests/factories/**',
+        'tests/global-setup.ts',
       ],
       thresholds: {
         lines: 80,
@@ -24,12 +27,13 @@ export default defineConfig({
       },
     },
     testTimeout: 30000,
-    hookTimeout: 30000,
-    teardownTimeout: 10000,
+    hookTimeout: 60000, // Testcontainers can be slow on first pull
+    teardownTimeout: 30000,
     pool: 'forks',
     poolOptions: {
       forks: {
-        singleFork: true,
+        singleFork: true, // Prevents race conditions with shared DB
+        execArgv: ['--import', 'tsx/esm'], // Enables .ts dynamic imports via autoload
       },
     },
   },

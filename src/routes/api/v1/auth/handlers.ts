@@ -1,7 +1,15 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import type { RegisterInput, LoginInput, RefreshInput } from '../../../../schemas/validation/index.js';
+import type {
+  RegisterInput,
+  LoginInput,
+  RefreshInput,
+} from '../../../../schemas/validation/index.js';
 import { hashPassword, verifyPassword } from '../../../../services/password.service.js';
-import { generateTokenPair, revokeRefreshToken, rotateRefreshToken } from '../../../../services/token.service.js';
+import {
+  generateTokenPair,
+  revokeRefreshToken,
+  rotateRefreshToken,
+} from '../../../../services/token.service.js';
 import { UnauthorizedError, ConflictError } from '../../../../utils/error.js';
 
 /**

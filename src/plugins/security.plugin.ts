@@ -15,9 +15,7 @@ const securityPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          styleSrc: ["'self'", "'unsafe-inline'"].concat(
-            instance.swaggerCSP?.style ?? [],
-          ),
+          styleSrc: ["'self'", "'unsafe-inline'"].concat(instance.swaggerCSP?.style ?? []),
           imgSrc: ["'self'", 'data:', 'validator.swagger.io'],
           scriptSrc: ["'self'"].concat(instance.swaggerCSP?.script ?? []),
           formAction: ["'self'"],

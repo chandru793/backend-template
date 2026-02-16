@@ -1,4 +1,10 @@
-import type { FastifyInstance, FastifyPluginAsync, FastifyError, FastifyRequest, FastifyReply } from 'fastify';
+import type {
+  FastifyInstance,
+  FastifyPluginAsync,
+  FastifyError,
+  FastifyRequest,
+  FastifyReply,
+} from 'fastify';
 import fp from 'fastify-plugin';
 import { hasZodFastifySchemaValidationErrors } from 'fastify-type-provider-zod';
 import { AppError, ValidationError, UnprocessableEntityError } from '../utils/error.js';
@@ -49,7 +55,9 @@ const errorHandlerPlugin: FastifyPluginAsync = async (fastify: FastifyInstance):
             ? error.details
             : undefined;
 
-        return reply.code(error.statusCode).send(formatErrorResponse(error.code, error.message, details));
+        return reply
+          .code(error.statusCode)
+          .send(formatErrorResponse(error.code, error.message, details));
       }
 
       // Handle Zod validation errors (from fastify-type-provider-zod)
@@ -59,24 +67,36 @@ const errorHandlerPlugin: FastifyPluginAsync = async (fastify: FastifyInstance):
           message: issue.message || 'Validation failed',
         }));
 
-        return reply.code(400).send(formatErrorResponse('VALIDATION_ERROR', 'Validation failed', details));
+        return reply
+          .code(400)
+          .send(formatErrorResponse('VALIDATION_ERROR', 'Validation failed', details));
       }
 
       // Handle Fastify validation errors
       if ('validation' in error && Array.isArray(error.validation)) {
-        const details = error.validation.map((v: { instancePath: string; params?: { missingProperty?: string }; message?: string }) => ({
-          field: v.instancePath.replace('/', '') || (v.params?.missingProperty ?? 'unknown'),
-          message: v.message ?? 'Validation failed',
-        }));
+        const details = error.validation.map(
+          (v: {
+            instancePath: string;
+            params?: { missingProperty?: string };
+            message?: string;
+          }) => ({
+            field: v.instancePath.replace('/', '') || (v.params?.missingProperty ?? 'unknown'),
+            message: v.message ?? 'Validation failed',
+          }),
+        );
 
-        return reply.code(400).send(formatErrorResponse('VALIDATION_ERROR', 'Validation failed', details));
+        return reply
+          .code(400)
+          .send(formatErrorResponse('VALIDATION_ERROR', 'Validation failed', details));
       }
 
       // Handle HTTP errors with statusCode
       if ('statusCode' in error && typeof error.statusCode === 'number') {
         // Handle rate limit errors
         if (error.statusCode === 429) {
-          return reply.code(429).send(formatErrorResponse('RATE_LIMITED', error.message || 'Too many requests'));
+          return reply
+            .code(429)
+            .send(formatErrorResponse('RATE_LIMITED', error.message || 'Too many requests'));
         }
 
         // Handle other HTTP errors
@@ -96,7 +116,9 @@ const errorHandlerPlugin: FastifyPluginAsync = async (fastify: FastifyInstance):
 
   // Handle 404 Not Found
   fastify.setNotFoundHandler((request, reply) => {
-    reply.code(404).send(formatErrorResponse('NOT_FOUND', `Route ${request.method} ${request.url} not found`));
+    reply
+      .code(404)
+      .send(formatErrorResponse('NOT_FOUND', `Route ${request.method} ${request.url} not found`));
   });
 };
 

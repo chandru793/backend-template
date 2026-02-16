@@ -102,7 +102,10 @@ export function livenessHandler(_request: FastifyRequest, reply: FastifyReply): 
  * Readiness probe handler
  * Checks if the app is ready to serve traffic
  */
-export async function readinessHandler(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+export async function readinessHandler(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
   const database = await checkDatabase(request);
 
   if (database.status !== 'healthy') {

@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "dev:debug": "tsx watch --inspect src/server.ts",
     "build": "tsc && pnpm prisma generate",
     "start": "node dist/server.js",
     "test": "vitest",

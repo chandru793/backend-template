@@ -59,6 +59,7 @@
     "argon2": "^0.41.0",
     "bullmq": "^5.0.0",
     "close-with-grace": "^2.4.0",
+    "cockatiel": "^3.2.1",
     "dotenv": "^17.2.4",
     "fastify": "^5.0.0",
     "fastify-plugin": "^5.0.0",

@@ -2,6 +2,7 @@ import type { PrismaClient } from '@prisma/client';
 import type { Redis } from 'ioredis';
 import type { JWT } from '@fastify/jwt';
 import type { Queue } from 'bullmq';
+import type { CircuitBreakerPolicy } from 'cockatiel';
 import type { CacheService } from '../services/cache.service.js';
 import type {
   EmailJobData,
@@ -46,6 +47,11 @@ declare module 'fastify' {
       welcomeEmail: Queue<WelcomeEmailJobData>;
       dataProcessing: Queue<DataProcessingJobData>;
       deadLetter: Queue;
+    };
+    // Circuit breaker policies for external dependencies
+    breakers: {
+      database: CircuitBreakerPolicy;
+      redis: CircuitBreakerPolicy;
     };
     // Added by @fastify/swagger-ui when registered (optional until Phase 10)
     swaggerCSP?: {

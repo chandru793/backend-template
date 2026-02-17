@@ -35,16 +35,37 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=development
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/fastify_app?schema=public
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      NODE_ENV: production
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/fastify_app?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # Override these with real secrets in production (use Docker secrets or env file)
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     restart: unless-stopped
+    # Harden the container filesystem
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    # Drop all Linux capabilities — add back only what's needed
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
 
 volumes:
   postgres_data:

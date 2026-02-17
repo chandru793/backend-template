@@ -44,9 +44,10 @@ export interface HealthCheckResponse {
   timestamp: number;
   uptime: number;
   checks: {
-    database: { status: HealthStatus; latency?: number };
-    redis: { status: HealthStatus; latency?: number };
+    database: { status: HealthStatus; latency?: number; error?: string };
+    redis: { status: HealthStatus; latency?: number; error?: string };
   };
+  circuitBreakers?: Record<string, string>;
 }
 
 /**

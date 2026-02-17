@@ -1,5 +1,11 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
+import { CircuitState } from 'cockatiel';
 import type { HealthStatus, HealthCheckResponse } from '../../types/index.js';
+
+/** Map numeric CircuitState enum to a human-readable string */
+function breakerStateName(state: CircuitState): string {
+  return CircuitState[state];
+}
 
 interface DependencyCheck {
   status: HealthStatus;
@@ -8,12 +14,15 @@ interface DependencyCheck {
 }
 
 /**
- * Check database connectivity
+ * Check database connectivity — wrapped in the circuit breaker.
+ * If the breaker is open, returns unhealthy immediately without hitting DB.
  */
 async function checkDatabase(request: FastifyRequest): Promise<DependencyCheck> {
   const start = Date.now();
   try {
-    await request.server.prisma.$queryRaw`SELECT 1`;
+    await request.server.breakers.database.execute(() =>
+      request.server.prisma.$queryRaw`SELECT 1`,
+    );
     return {
       status: 'healthy',
       latency: Date.now() - start,
@@ -28,7 +37,7 @@ async function checkDatabase(request: FastifyRequest): Promise<DependencyCheck> 
 }
 
 /**
- * Check Redis connectivity
+ * Check Redis connectivity — wrapped in the circuit breaker.
  */
 async function checkRedis(request: FastifyRequest): Promise<DependencyCheck> {
   const start = Date.now();
@@ -40,7 +49,7 @@ async function checkRedis(request: FastifyRequest): Promise<DependencyCheck> {
         error: 'Redis not connected',
       };
     }
-    await redis.ping();
+    await request.server.breakers.redis.execute(() => redis.ping());
     return {
       status: 'healthy',
       latency: Date.now() - start,
@@ -56,7 +65,7 @@ async function checkRedis(request: FastifyRequest): Promise<DependencyCheck> {
 
 /**
  * Main health check handler
- * Returns detailed health status of all dependencies
+ * Returns detailed health status of all dependencies and circuit breaker states.
  */
 export async function healthHandler(request: FastifyRequest, reply: FastifyReply): Promise<void> {
   const [database, redis] = await Promise.all([checkDatabase(request), checkRedis(request)]);
@@ -81,6 +90,10 @@ export async function healthHandler(request: FastifyRequest, reply: FastifyReply
     timestamp: Date.now(),
     uptime: process.uptime(),
     checks,
+    circuitBreakers: {
+      database: breakerStateName(request.server.breakers.database.state),
+      redis: breakerStateName(request.server.breakers.redis.state),
+    },
   };
 
   const statusCode = status === 'healthy' ? 200 : status === 'degraded' ? 200 : 503;

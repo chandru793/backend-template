@@ -30,6 +30,11 @@ RUN pnpm prune --prod
 # Production stage
 FROM node:22-slim AS production
 
+# OCI standard image labels
+LABEL org.opencontainers.image.title="fastify-production-template" \
+      org.opencontainers.image.description="Production-ready Fastify backend template" \
+      org.opencontainers.image.base.name="node:22-slim"
+
 WORKDIR /app
 
 # Install OpenSSL for Prisma query engine
@@ -39,14 +44,11 @@ RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 RUN groupadd -g 1001 nodejs && \
     useradd -u 1001 -g nodejs -m fastify
 
-# Copy only production artifacts from builder
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/prisma ./prisma
-
-# Set ownership
-RUN chown -R fastify:nodejs /app
+# Copy only production artifacts from builder — owned by non-root user
+COPY --from=builder --chown=fastify:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=fastify:nodejs /app/dist ./dist
+COPY --from=builder --chown=fastify:nodejs /app/package.json ./
+COPY --from=builder --chown=fastify:nodejs /app/prisma ./prisma
 
 # Switch to non-root user
 USER fastify

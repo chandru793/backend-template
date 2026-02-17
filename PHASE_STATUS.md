@@ -464,9 +464,8 @@ await fastify.cache.del(`user:${id}`);
 - `eslint`, `prettier`, `typescript`, `typescript-eslint`
 - `tsx`, `close-with-grace`
 
-### Need to Install 🔴
-- `cockatiel` (Phase 11 - Circuit breakers)
-- `@scalar/fastify-api-reference` (Phase 10 - Optional modern API docs UI)
+### Need to Install
+None — all dependencies are installed.
 
 ---
 
@@ -487,9 +486,9 @@ await fastify.cache.del(`user:${id}`);
 
 - Phase 2 was absorbed into Phase 1 during the market standards audit
 - All 17 standards violations from initial Phase 1 have been fixed
-- The codebase is production-ready up to Phase 2 level
-- Docker setup uses `node:22-slim` (not Alpine) for argon2 compatibility
+- Docker setup uses `node:22-slim` (not Alpine) for argon2 glibc compatibility
 - Redis has 3 separate connections to prevent cascading failures
 - Graceful shutdown uses `close-with-grace` (by Fastify co-creator)
-- Helmet uses callback form for future Swagger UI compatibility
+- Helmet uses callback form for Swagger CSP compatibility (swaggerCSP optional until swagger loads)
 - All code passes `type-check` and `lint` with zero errors
+- README.md added 2026-02-17 with full project documentation

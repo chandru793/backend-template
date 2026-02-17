@@ -15,8 +15,10 @@ const securityPlugin: FastifyPluginAsync = async (fastify: FastifyInstance) => {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           styleSrc: ["'self'", "'unsafe-inline'"].concat(instance.swaggerCSP?.style ?? []),
           imgSrc: ["'self'", 'data:', 'validator.swagger.io'],
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           scriptSrc: ["'self'"].concat(instance.swaggerCSP?.script ?? []),
           formAction: ["'self'"],
         },

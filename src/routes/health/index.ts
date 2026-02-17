@@ -10,30 +10,42 @@ const healthRoutes: FastifyPluginAsync = async (fastify: FastifyInstance): Promi
   await Promise.resolve(); // Satisfy async requirement
 
   // Main health check - includes dependency checks
-  // Route: /health (folder name becomes prefix)
   fastify.get(
     '/',
     {
+      schema: {
+        tags: ['Health'],
+        summary: 'Health check',
+        description: 'Returns service health including database and Redis connectivity.',
+      },
       config: { rateLimit: false },
     },
     healthHandler,
   );
 
-  // Kubernetes liveness probe - is the app running?
-  // Route: /health/live
+  // Kubernetes liveness probe
   fastify.get(
     '/live',
     {
+      schema: {
+        tags: ['Health'],
+        summary: 'Liveness probe',
+        description: 'Kubernetes liveness probe. Returns 200 if the process is alive.',
+      },
       config: { rateLimit: false },
     },
     livenessHandler,
   );
 
-  // Kubernetes readiness probe - is the app ready to serve traffic?
-  // Route: /health/ready
+  // Kubernetes readiness probe
   fastify.get(
     '/ready',
     {
+      schema: {
+        tags: ['Health'],
+        summary: 'Readiness probe',
+        description: 'Kubernetes readiness probe. Returns 200 when ready to serve traffic.',
+      },
       config: { rateLimit: false },
     },
     readinessHandler,

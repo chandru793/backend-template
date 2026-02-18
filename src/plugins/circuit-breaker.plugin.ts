@@ -46,7 +46,9 @@ const handleTransientErrors = handleWhen(
  *     fastify.prisma.user.findUnique({ where: { id } })
  *   );
  */
-const circuitBreakerPlugin: FastifyPluginAsync = async (fastify: FastifyInstance): Promise<void> => {
+const circuitBreakerPlugin: FastifyPluginAsync = async (
+  fastify: FastifyInstance,
+): Promise<void> => {
   await Promise.resolve(); // plugin setup is synchronous
 
   // ── Raw circuit breakers (kept for health check state inspection) ──────────

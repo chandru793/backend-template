@@ -3,6 +3,7 @@ import type { Redis } from 'ioredis';
 import type { JWT } from '@fastify/jwt';
 import type { Queue } from 'bullmq';
 import type { CircuitBreakerPolicy } from 'cockatiel';
+import type { Registry } from 'prom-client';
 import type { CacheService } from '../services/cache.service.js';
 import type {
   EmailJobData,
@@ -58,6 +59,8 @@ declare module 'fastify' {
       database: { execute<T>(fn: () => Promise<T> | T): Promise<T> };
       redis: { execute<T>(fn: () => Promise<T> | T): Promise<T> };
     };
+    // Prometheus registry — shared across plugins for custom metrics
+    metrics: Registry;
     // Added by @fastify/swagger-ui when registered (optional until Phase 10)
     swaggerCSP?: {
       script: string[];

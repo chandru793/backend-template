@@ -48,10 +48,15 @@ declare module 'fastify' {
       dataProcessing: Queue<DataProcessingJobData>;
       deadLetter: Queue;
     };
-    // Circuit breaker policies for external dependencies
+    // Raw circuit breakers — used for state inspection in health checks
     breakers: {
       database: CircuitBreakerPolicy;
       redis: CircuitBreakerPolicy;
+    };
+    // Combined retry + circuit breaker policies — use these in handlers
+    policies: {
+      database: { execute<T>(fn: () => Promise<T> | T): Promise<T> };
+      redis: { execute<T>(fn: () => Promise<T> | T): Promise<T> };
     };
     // Added by @fastify/swagger-ui when registered (optional until Phase 10)
     swaggerCSP?: {

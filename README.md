@@ -268,6 +268,16 @@ The production container runs as a non-root user (`fastify:nodejs`), with a read
 - CORS allows only explicitly listed origins; preflight cached for 10 minutes
 - Swagger UI disabled in `NODE_ENV=production`
 
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for the full workflow, commit message format, branch protection rules, and pre-commit hook details.
+
+```bash
+pnpm lint && pnpm format:check && pnpm type-check && pnpm test run
+```
+
+All four must pass locally before opening a PR. CI enforces the same checks automatically.
+
 ## License
 
 MIT

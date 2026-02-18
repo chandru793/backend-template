@@ -20,9 +20,7 @@ interface DependencyCheck {
 async function checkDatabase(request: FastifyRequest): Promise<DependencyCheck> {
   const start = Date.now();
   try {
-    await request.server.breakers.database.execute(() =>
-      request.server.prisma.$queryRaw`SELECT 1`,
-    );
+    await request.server.breakers.database.execute(() => request.server.prisma.$queryRaw`SELECT 1`);
     return {
       status: 'healthy',
       latency: Date.now() - start,

@@ -85,7 +85,7 @@ describe('delMany', () => {
 
 describe('getOrSet', () => {
   it('calls the fetcher and caches the result on a cache miss', async () => {
-    const fetcher = vi.fn(async () => 'fresh-value');
+    const fetcher = vi.fn(() => Promise.resolve('fresh-value'));
     const result = await cache.getOrSet('new-key', fetcher);
     expect(result).toBe('fresh-value');
     expect(fetcher).toHaveBeenCalledOnce();
@@ -96,7 +96,7 @@ describe('getOrSet', () => {
 
   it('returns the cached value without calling the fetcher on a cache hit', async () => {
     await cache.set('cached-key', 'cached-value');
-    const fetcher = vi.fn(async () => 'should-not-be-called');
+    const fetcher = vi.fn(() => Promise.resolve('should-not-be-called'));
     const result = await cache.getOrSet('cached-key', fetcher);
     expect(result).toBe('cached-value');
     expect(fetcher).not.toHaveBeenCalled();

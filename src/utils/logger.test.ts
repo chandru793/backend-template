@@ -1,6 +1,14 @@
 import { describe, it, expect, vi } from 'vitest';
 import { loggerConfig } from './logger.js';
 
+// pino's LoggerOptions types serializers as optional; cast once to avoid non-null assertions
+type Serializer = (value: never) => Record<string, unknown>;
+const { req: reqSerializer, res: resSerializer, err: errSerializer } = loggerConfig.serializers as {
+  req: Serializer;
+  res: Serializer;
+  err: Serializer;
+};
+
 describe('loggerConfig', () => {
   it('has a log level set', () => {
     expect(typeof loggerConfig.level).toBe('string');
@@ -16,7 +24,7 @@ describe('loggerConfig', () => {
 });
 
 describe('req serializer', () => {
-  const serialize = loggerConfig.serializers!.req!;
+  const serialize = reqSerializer;
 
   it('returns method, url, params, query, and selected headers', () => {
     const result = serialize({
@@ -56,7 +64,7 @@ describe('req serializer', () => {
 });
 
 describe('res serializer', () => {
-  const serialize = loggerConfig.serializers!.res!;
+  const serialize = resSerializer;
 
   it('returns statusCode', () => {
     const result = serialize({ statusCode: 200 } as never);
@@ -65,7 +73,7 @@ describe('res serializer', () => {
 });
 
 describe('err serializer', () => {
-  const serialize = loggerConfig.serializers!.err!;
+  const serialize = errSerializer;
 
   it('returns type, message, stack, and code', () => {
     const result = serialize({

@@ -13,10 +13,12 @@ A production-ready Fastify 5 backend template with TypeScript, PostgreSQL, Redis
 | Auth | JWT (HS256) + Argon2id |
 | Validation | Zod + fastify-type-provider-zod |
 | Docs | OpenAPI 3.1 + Swagger UI |
-| Circuit breakers | cockatiel |
+| Circuit breakers | cockatiel (breaker + retry) |
+| Metrics | prom-client (Prometheus) |
 | Testing | Vitest + Testcontainers |
 | Logging | Pino (structured JSON) |
 | Container | Docker (multi-stage, non-root, read-only FS) |
+| CI/CD | GitHub Actions |
 
 ## Features
 
@@ -24,11 +26,14 @@ A production-ready Fastify 5 backend template with TypeScript, PostgreSQL, Redis
 - **Rate limiting** — Redis-backed, per-user/per-IP, per-route overrides, fail-closed
 - **Caching** — cache-aside pattern via Redis, ETag support, TTL + pattern invalidation
 - **Background queues** — BullMQ with email, welcome-email, data-processing, and dead-letter queues
-- **Circuit breakers** — protect DB and Redis with automatic open/half-open/close transitions
+- **Circuit breakers + retries** — cockatiel protects DB and Redis; retry policy wraps each breaker for transient error recovery
+- **Prometheus metrics** — default Node.js process metrics + business metrics (circuit breaker state, cache hit/miss, queue depth) at `GET /metrics`
+- **Queue dashboard** — Bull Board UI at `GET /queues` (dev only) for inspecting job counts, retries, and dead-letter queue
 - **API documentation** — Swagger UI at `/documentation` (dev only), OpenAPI 3.1 JSON spec
 - **Validation** — Zod schemas on all inputs and outputs; field-level error messages
 - **Security** — Helmet CSP, CORS, gzip compression, Argon2id hashing
 - **Code quality** — ESLint 9, Prettier, Husky v9 pre-commit hooks, commitlint
+- **CI/CD** — GitHub Actions with parallel lint, type-check, and test jobs; coverage artifact upload
 - **Tests** — 32 integration tests using real Postgres + Redis via Testcontainers
 - **Docker** — multi-stage build, non-root user, read-only filesystem, resource limits
 
@@ -75,6 +80,8 @@ pnpm dev                 # tsx watch — hot reload on file changes
 
 The API is available at `http://localhost:3000`.
 Swagger UI is at `http://localhost:3000/documentation`.
+Bull Board is at `http://localhost:3000/queues`.
+Prometheus metrics are at `http://localhost:3000/metrics`.
 
 ## Scripts
 
@@ -128,6 +135,13 @@ Swagger UI is at `http://localhost:3000/documentation`.
 | PATCH | `/api/v1/users/:id` | Update user (cache invalidated) |
 | DELETE | `/api/v1/users/:id` | Delete user (cache invalidated) |
 
+### Observability
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/metrics` | Prometheus metrics (process + business metrics) |
+| GET | `/queues` | Bull Board queue dashboard (dev only) |
+
 ### Docs
 
 | Method | Path | Description |
@@ -171,12 +185,15 @@ src/
 ├── middleware/
 │   └── auth.middleware.ts        # JWT auth middleware (onRequest hook)
 ├── plugins/                      # Fastify plugins (autoloaded alphabetically)
+│   ├── bull-board.plugin.ts      # Bull Board queue UI (dev only)
+│   ├── business-metrics.plugin.ts# Circuit breaker / cache / queue metrics
 │   ├── cache.plugin.ts           # Redis cache service
-│   ├── circuit-breaker.plugin.ts # cockatiel circuit breakers
+│   ├── circuit-breaker.plugin.ts # cockatiel circuit breakers + retry policies
 │   ├── database.plugin.ts        # Prisma client
 │   ├── errorHandler.plugin.ts    # Global error handler + Zod errors
 │   ├── etag.plugin.ts            # ETag support
 │   ├── jwt.plugin.ts             # @fastify/jwt setup
+│   ├── metrics.plugin.ts         # Prometheus metrics (prom-client)
 │   ├── queue.plugin.ts           # BullMQ queues
 │   ├── rateLimit.plugin.ts       # Redis-backed rate limiting
 │   ├── redis.plugin.ts           # 3 Redis connections (general / queue / rate-limit)
@@ -212,7 +229,9 @@ tests/
 
 **Three Redis connections** — `redis` (general cache), `redisQueue` (BullMQ, `maxRetriesPerRequest: null`), `redisRateLimit` (fast-fail, `connectTimeout: 500ms`). Prevents cascading failures if one connection is slow.
 
-**Circuit breakers** — database breaker opens after 5 consecutive failures (10s recovery); Redis breaker after 3 (5s recovery). State visible in `GET /health`.
+**Circuit breakers + retries** — database breaker opens after 5 consecutive failures (10s recovery); Redis breaker after 3 (5s recovery). Each breaker is wrapped with a retry policy (`wrap(breaker, retry)`) so transient errors (ECONNRESET, ETIMEDOUT, Prisma P1001/P1008) are retried before the breaker counts a failure. State visible in `GET /health` and `GET /metrics`.
+
+**Prometheus metrics** — `GET /metrics` exposes default Node.js process metrics plus business metrics: circuit breaker state (0/1/2), cache hit/miss counters, and live queue job counts per status. The shared `fastify.metrics` registry can be extended by any plugin.
 
 **Refresh token rotation** — each refresh issues a new token pair and revokes the old one. Tokens are stored hashed in Postgres. A `jti` (JWT ID) claim guarantees uniqueness within the same second.
 

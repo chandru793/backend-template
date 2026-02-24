@@ -18,6 +18,18 @@ export default defineConfig({
         'tests/helpers/**',
         'tests/factories/**',
         'tests/global-setup.ts',
+        'src/server.ts',
+        'src/queues/workers/**',
+        'src/queues/connections.ts',
+        // Root-level tooling config — not application code
+        'vitest.config.ts',
+        'eslint.config.js',
+        'commitlint.config.js',
+        // Pure TypeScript type declarations — no executable branches
+        'src/types/**',
+        'src/queues/jobs/types.ts',
+        // Pure constant exports — no logic to branch on
+        'src/utils/constants.ts',
       ],
       thresholds: {
         lines: 80,

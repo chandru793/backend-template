@@ -3,7 +3,11 @@ import { loggerConfig } from './logger.js';
 
 // pino's LoggerOptions types serializers as optional; cast once to avoid non-null assertions
 type Serializer = (value: never) => Record<string, unknown>;
-const { req: reqSerializer, res: resSerializer, err: errSerializer } = loggerConfig.serializers as {
+const {
+  req: reqSerializer,
+  res: resSerializer,
+  err: errSerializer,
+} = loggerConfig.serializers as {
   req: Serializer;
   res: Serializer;
   err: Serializer;

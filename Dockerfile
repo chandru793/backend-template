@@ -24,8 +24,8 @@ COPY tsconfig.json ./
 COPY src ./src
 RUN pnpm build
 
-# Prune devDependencies after build
-RUN pnpm prune --prod
+# Remove devDependencies after build
+RUN pnpm install --prod --frozen-lockfile
 
 # Production stage
 FROM node:22-slim AS production

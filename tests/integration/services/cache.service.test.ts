@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import { Redis } from 'ioredis';
-import { CacheService } from './cache.service.js';
+import { CacheService } from '../../../src/services/cache.service.js';
 
 const TEST_PREFIX = 'test-cache-svc:';
 

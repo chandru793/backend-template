@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { FastifyInstance } from 'fastify';
-import { createTestApp } from '../../tests/helpers/app.js';
+import { createTestApp } from '../../helpers/app.js';
 
 /**
  * These tests run the app in development mode to cover the branches

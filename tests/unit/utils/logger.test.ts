@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { loggerConfig } from './logger.js';
+import { loggerConfig } from '../../../src/utils/logger.js';
 
 // pino's LoggerOptions types serializers as optional; cast once to avoid non-null assertions
 type Serializer = (value: never) => Record<string, unknown>;
@@ -110,7 +110,7 @@ describe('LOG_LEVEL env var', () => {
     process.env.LOG_LEVEL = 'debug';
 
     vi.resetModules();
-    const { loggerConfig: customConfig } = await import('./logger.js');
+    const { loggerConfig: customConfig } = await import('../../../src/utils/logger.js');
 
     expect(customConfig.level).toBe('debug');
 
@@ -125,7 +125,7 @@ describe('development mode transport', () => {
     process.env.NODE_ENV = 'development';
 
     vi.resetModules();
-    const { loggerConfig: devConfig } = await import('./logger.js');
+    const { loggerConfig: devConfig } = await import('../../../src/utils/logger.js');
 
     expect(devConfig.transport).toBeDefined();
     expect((devConfig.transport as { target: string }).target).toBe('pino-pretty');

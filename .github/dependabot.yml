@@ -8,7 +8,7 @@ updates:
       interval: weekly
       day: monday
       time: "09:00"
-      timezone: UTC
+      timezone: Etc/UTC
     open-pull-requests-limit: 10
     groups:
       # Bundle all non-breaking minor + patch updates into one PR per week
@@ -28,5 +28,5 @@ updates:
       interval: weekly
       day: monday
       time: "09:00"
-      timezone: UTC
+      timezone: Etc/UTC
     open-pull-requests-limit: 5

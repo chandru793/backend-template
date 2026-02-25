@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { hashPassword, verifyPassword } from './password.service.js';
+import { hashPassword, verifyPassword } from '../../../src/services/password.service.js';
 
 describe('hashPassword', () => {
   it('returns an argon2id hash string', async () => {

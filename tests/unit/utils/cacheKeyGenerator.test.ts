@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { generateCacheKey, hashBody, userCacheKey, listCacheKey } from './cacheKeyGenerator.js';
+import {
+  generateCacheKey,
+  hashBody,
+  userCacheKey,
+  listCacheKey,
+} from '../../../src/utils/cacheKeyGenerator.js';
 
 describe('generateCacheKey', () => {
   it('joins string parts with colons', () => {

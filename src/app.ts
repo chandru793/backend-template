@@ -40,7 +40,6 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     dir: join(__dirname, 'plugins'),
     options: {},
     forceESM: true,
-    ignorePattern: /\.test\.(ts|js)$/,
   });
 
   // Register routes
@@ -48,7 +47,6 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
     dir: join(__dirname, 'routes'),
     options: { prefix: '' },
     forceESM: true,
-    ignorePattern: /\.test\.(ts|js)$/,
   });
 
   return app;

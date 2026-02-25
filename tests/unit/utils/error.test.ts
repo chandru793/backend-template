@@ -11,7 +11,7 @@ import {
   RateLimitError,
   InternalServerError,
   ServiceUnavailableError,
-} from './error.js';
+} from '../../../src/utils/error.js';
 
 describe('AppError', () => {
   it('sets statusCode, message, code, and name', () => {

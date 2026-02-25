@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { createTestApp } from '../../../../../tests/helpers/app.js';
-import { cleanDatabase } from '../../../../../tests/helpers/db.js';
-import { createUser, buildUserPayload } from '../../../../../tests/factories/user.factory.js';
+import { createTestApp } from '../helpers/app.js';
+import { cleanDatabase } from '../helpers/db.js';
+import { createUser, buildUserPayload } from '../factories/user.factory.js';
 
 const prisma = new PrismaClient();
 

@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { PrismaClient } from '@prisma/client';
-import { createTestApp } from '../../../../../tests/helpers/app.js';
-import { cleanDatabase } from '../../../../../tests/helpers/db.js';
-import { createUser, TEST_PASSWORD } from '../../../../../tests/factories/user.factory.js';
+import { createTestApp } from '../helpers/app.js';
+import { cleanDatabase } from '../helpers/db.js';
+import { createUser, TEST_PASSWORD } from '../factories/user.factory.js';
 
 const prisma = new PrismaClient();
 
@@ -131,7 +131,6 @@ describe('Auth Routes', () => {
 
   describe('GET /api/v1/auth/me', () => {
     it('returns current user for valid token', async () => {
-      // Register to get tokens
       const reg = await app.inject({
         method: 'POST',
         url: '/api/v1/auth/register',

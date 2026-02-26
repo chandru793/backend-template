@@ -5,6 +5,7 @@ import {
   userResponse,
   userListItem,
   paginationQuery,
+  paginationMeta,
   idParam,
   errorResponse,
 } from '../../../../schemas/validation/index.js';
@@ -38,16 +39,13 @@ export const getUserSchema = {
 export const listUsersSchema = {
   tags: ['Users'],
   summary: 'List users',
-  description: 'Paginated list of users.',
+  description:
+    'Paginated list of users. Results are cached for 30 seconds per page/limit combination.',
   querystring: paginationQuery,
   response: {
     200: z.object({
       data: z.array(userListItem),
-      pagination: z.object({
-        page: z.number(),
-        limit: z.number(),
-        total: z.number(),
-      }),
+      pagination: paginationMeta,
     }),
   },
 } as const;

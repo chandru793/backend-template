@@ -37,6 +37,18 @@ export const errorResponse = z.object({
 });
 
 /**
+ * Pagination metadata returned in list responses
+ */
+export const paginationMeta = z.object({
+  page: z.number().int(),
+  limit: z.number().int(),
+  total: z.number().int(),
+  totalPages: z.number().int(),
+  hasNextPage: z.boolean(),
+  hasPrevPage: z.boolean(),
+});
+
+/**
  * Success message response
  */
 export const messageResponse = z.object({
@@ -46,3 +58,4 @@ export const messageResponse = z.object({
 // Type exports for use in handlers
 export type PaginationQuery = z.infer<typeof paginationQuery>;
 export type IdParam = z.infer<typeof idParam>;
+export type PaginationMeta = z.infer<typeof paginationMeta>;

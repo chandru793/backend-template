@@ -5,8 +5,8 @@
 - [x] 1. Seed script — `prisma/seed.ts` (PR #23)
 - [x] 2. GitHub Actions CI — lint, test, type-check, audit, docker build (PR #24)
 - [x] 3. `.env.example` — verify it exists and covers all vars
-- [ ] 4. Multi-env support — `.env.staging` / `.env.production` examples
-- [ ] 5. `DEPLOYMENT.md` — guide on how to deploy to production
+- [ ] 4. ~~Multi-env support~~ — skipped
+- [x] 5. `DEPLOYMENT.md` — guide on how to deploy to production
 
 ## Medium Priority
 

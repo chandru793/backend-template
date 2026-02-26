@@ -24,8 +24,8 @@ COPY tsconfig.json ./
 COPY src ./src
 RUN pnpm build
 
-# Prune devDependencies after build
-RUN pnpm prune --prod
+# Remove devDependencies after build (--ignore-scripts skips the husky prepare hook)
+RUN pnpm install --prod --ignore-scripts
 
 # Production stage
 FROM node:22-slim AS production

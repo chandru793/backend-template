@@ -12,8 +12,8 @@
 
 - [x] 6. npm audit in CI — dependency vulnerability scanning (PR #24)
 - [x] 7. Error handler test file — dedicated test file (currently only 2 tests in observability.test.ts)
-- [ ] 8. `.nvmrc` — Node version pinning for developers
-- [ ] 9. `.editorconfig` — cross-editor consistency
+- [x] 8. `.nvmrc` — Node version pinning for developers
+- [x] 9. `.editorconfig` — cross-editor consistency
 - [ ] 10. Pagination — README mentions it but no implementation
 
 ## Lower Priority

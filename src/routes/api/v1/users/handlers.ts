@@ -7,6 +7,7 @@ import type {
 } from '../../../../schemas/validation/index.js';
 import { NotFoundError } from '../../../../utils/error.js';
 import { hashPassword } from '../../../../services/password.service.js';
+import { listCacheKey } from '../../../../utils/cacheKeyGenerator.js';
 
 /**
  * Create a new user
@@ -79,6 +80,7 @@ export async function getUserHandler(
 
 /**
  * List users with pagination
+ * Uses cache-aside pattern with 30-second TTL keyed by page + limit
  */
 export async function listUsersHandler(
   this: FastifyRequest['server'],
@@ -86,31 +88,46 @@ export async function listUsersHandler(
   reply: FastifyReply,
 ) {
   const { page, limit } = request.query;
-  const skip = (page - 1) * limit;
+  const cacheKey = listCacheKey('users', { page, limit });
 
-  const [users, total] = await Promise.all([
-    this.prisma.user.findMany({
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-      },
-      skip,
-      take: limit,
-      orderBy: { createdAt: 'desc' },
-    }),
-    this.prisma.user.count(),
-  ]);
+  const result = await this.cache.getOrSet(
+    cacheKey,
+    async () => {
+      const skip = (page - 1) * limit;
 
-  return reply.send({
-    data: users,
-    pagination: {
-      page,
-      limit,
-      total,
+      const [users, total] = await Promise.all([
+        this.prisma.user.findMany({
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+          },
+          skip,
+          take: limit,
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.prisma.user.count(),
+      ]);
+
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        data: users,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
+        },
+      };
     },
-  });
+    30, // Cache for 30 seconds
+  );
+
+  return reply.send(result);
 }
 
 /**

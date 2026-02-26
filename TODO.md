@@ -14,7 +14,7 @@
 - [x] 7. Error handler test file — dedicated test file (currently only 2 tests in observability.test.ts)
 - [x] 8. `.nvmrc` — Node version pinning for developers
 - [x] 9. `.editorconfig` — cross-editor consistency
-- [ ] 10. Pagination — README mentions it but no implementation
+- [x] 10. Pagination — full pagination meta (totalPages, hasNextPage, hasPrevPage) + list caching
 
 ## Lower Priority
 

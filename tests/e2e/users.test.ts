@@ -119,7 +119,7 @@ describe('User Routes', () => {
   // ─── List ────────────────────────────────────────────────────────────────────
 
   describe('GET /api/v1/users', () => {
-    it('returns paginated list of users', async () => {
+    it('returns paginated list with full pagination meta', async () => {
       await Promise.all([createUser(prisma), createUser(prisma), createUser(prisma)]);
 
       const response = await app.inject({
@@ -130,7 +130,47 @@ describe('User Routes', () => {
       expect(response.statusCode).toBe(200);
       const body = response.json();
       expect(body.data).toHaveLength(3);
-      expect(body.pagination).toMatchObject({ page: 1, limit: 10, total: 3 });
+      expect(body.pagination).toMatchObject({
+        page: 1,
+        limit: 10,
+        total: 3,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPrevPage: false,
+      });
+    });
+
+    it('hasNextPage=true and hasPrevPage=true on a middle page', async () => {
+      await Promise.all([
+        createUser(prisma),
+        createUser(prisma),
+        createUser(prisma),
+        createUser(prisma),
+        createUser(prisma),
+      ]);
+
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/v1/users?page=2&limit=2',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const { pagination } = response.json();
+      expect(pagination.hasPrevPage).toBe(true);
+      expect(pagination.hasNextPage).toBe(true);
+      expect(pagination.totalPages).toBeGreaterThanOrEqual(2);
+    });
+
+    it('uses default page=1 and limit=20 when query params are omitted', async () => {
+      const response = await app.inject({
+        method: 'GET',
+        url: '/api/v1/users',
+      });
+
+      expect(response.statusCode).toBe(200);
+      const { pagination } = response.json();
+      expect(pagination.page).toBe(1);
+      expect(pagination.limit).toBe(20);
     });
 
     it('returns 400 for invalid pagination (page 0)', async () => {

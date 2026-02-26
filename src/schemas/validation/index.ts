@@ -5,10 +5,12 @@
 // Common schemas
 export {
   paginationQuery,
+  paginationMeta,
   idParam,
   errorResponse,
   messageResponse,
   type PaginationQuery,
+  type PaginationMeta,
   type IdParam,
 } from './common.schema.js';
 
